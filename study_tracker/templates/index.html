@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Study Tracker - Goals</title>
+    <link rel="stylesheet" href="./static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Goals</h2>
+      <form method="POST" action="/add_goal">
+        <input
+          type="text"
+          name="goal_name"
+          placeholder="Goal Name"
+          required
+        /><br />
+        <input
+          type="date"
+          name="start_date"
+          placeholder="Start Date"
+          required
+        /><br />
+        <input
+          type="date"
+          name="end_date"
+          placeholder="End Date"
+          required
+        /><br />
+        <input
+          type="number"
+          step="0.1"
+          name="target_hours"
+          placeholder="Target Hours"
+          required
+        /><br />
+        <button type="submit">Add Goal</button>
+      </form>
+
+      <!-- Panda animation container, initially hidden -->
+      <!-- Combined Panda animation container -->
+      <div id="panda-animation" class="panda-container" style="display: none">
+        <div class="panda-wrapper">
+          <img
+            src="./static/panda.jpg"
+            alt="Panda"
+            class="panda-image"
+          />
+          <div class="thumbs-up">&#128077;</div>
+        </div>
+        <div class="slogan">Happy Coding</div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+
+      <form method="POST" action="/delete_goal" id="goalForm">
+        <table>
+          <thead>
+            <tr>
+              <th>Delete</th>
+              <th>Goal</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Target Hours</th>
+              <th>Completed Hours</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in goals %}
+            <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  name="goal_id"
+                  value="{{ g[0] }}"
+                  onchange="document.getElementById('goalForm').submit()"
+                />
+              </td>
+              <td>{{ g[1] }}</td>
+              <td>{{ g[2] }}</td>
+              <td>{{ g[3] }}</td>
+              <td>{{ "%.2f"|format(g[4]) }}</td>
+              <td>{{ "%.2f"|format(g[5]) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
+
+      <a href="/timetable">Go to Timetable</a>
+    </div>
+    <script>
+      function showPandaAnimation() {
+        const pandaDiv = document.getElementById("panda-animation");
+        pandaDiv.style.display = "block";
+
+        // Reset opacity and animation
+        pandaDiv.style.opacity = "0";
+        pandaDiv.style.animation = "none";
+        pandaDiv.offsetHeight; // Trigger reflow for restart
+        pandaDiv.style.animation = "fade-scale-in 0.8s forwards";
+
+        // Hide after 3 seconds with fade-out
+        setTimeout(() => {
+          pandaDiv.style.transition = "opacity 0.8s ease";
+          pandaDiv.style.opacity = "0";
+          setTimeout(() => {
+            pandaDiv.style.display = "none";
+            pandaDiv.style.transition = "";
+          }, 800);
+        }, 3000);
+      }
+
+      window.onload = () => {
+        const flash = document.querySelector(".flash-messages");
+        if (flash && flash.children.length > 0) {
+          showPandaAnimation();
+        }
+      };
+    </script>
+  </body>
+</html>

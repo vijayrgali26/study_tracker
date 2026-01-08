@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Daily Timetable</title>
+    <link rel="stylesheet" href="./static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Daily Timetable / Study Sessions</h2>
+
+      <form method="POST">
+        <label>Date: <input type="date" name="date" required /></label><br />
+        <label
+          >Start Time: <input type="time" name="start_time" required /></label
+        ><br />
+        <label>End Time: <input type="time" name="end_time" required /></label
+        ><br />
+        <label
+          >Tasks:
+          <textarea
+            name="tasks"
+            placeholder="Your study tasks"
+          ></textarea></label
+        ><br />
+        <button type="submit">Add Session</button>
+      </form>
+
+      <div id="panda-animation" class="panda-container" style="display: none">
+        <div class="panda-wrapper">
+          <img src="./static/panda.jpg" alt="Panda" class="panda-image" />
+          <div class="thumbs-up">&#128077;</div>
+        </div>
+        <div class="slogan">Happy Coding</div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+
+      <form method="POST" action="/delete_session" id="sessionForm">
+        <table>
+          <thead>
+            <tr>
+              <th>Delete</th>
+              <th>Date</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Total Hours</th>
+              <th>Tasks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+            <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  name="session_id"
+                  value="{{ entry[0] }}"
+                  onchange="document.getElementById('sessionForm').submit()"
+                />
+              </td>
+              <td>{{ entry[1] }}</td>
+              <td>{{ entry[2] }}</td>
+              <td>{{ entry[3] }}</td>
+              <td>{{ "%.2f"|format(entry[4]) }}</td>
+              <td>{{ entry[5] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
+
+      <a href="/">Back to Goals</a>
+    </div>
+
+    <script>
+      function showPandaAnimation() {
+        const pandaDiv = document.getElementById("panda-animation");
+        pandaDiv.style.display = "block";
+
+        // Reset opacity and animation
+        pandaDiv.style.opacity = "0";
+        pandaDiv.style.animation = "none";
+        pandaDiv.offsetHeight; // Trigger reflow for restart
+        pandaDiv.style.animation = "fade-scale-in 0.8s forwards";
+
+        // Hide after 3 seconds with fade-out
+        setTimeout(() => {
+          pandaDiv.style.transition = "opacity 0.8s ease";
+          pandaDiv.style.opacity = "0";
+          setTimeout(() => {
+            pandaDiv.style.display = "none";
+            pandaDiv.style.transition = "";
+          }, 800);
+        }, 3000);
+      }
+
+      window.onload = () => {
+        const flash = document.querySelector(".flash-messages");
+        if (flash && flash.children.length > 0) {
+          showPandaAnimation();
+        }
+      };
+    </script>
+  </body>
+</html>
